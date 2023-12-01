@@ -11,6 +11,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,6 +32,7 @@ public class ArticleController {
     }
 
     @RequestMapping("/articles")
+    @CrossOrigin
     public ResponseEntity<List<ArticleResponse>> findAllArticles(){
         List<ArticleResponse> articles = articleService.findall()
                 .stream()
