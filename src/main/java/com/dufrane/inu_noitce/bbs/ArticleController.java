@@ -1,9 +1,6 @@
 package com.dufrane.inu_noitce.bbs;
 
-import com.dufrane.inu_noitce.bbs.Article;
-import com.dufrane.inu_noitce.bbs.AddArticleRequest;
-import com.dufrane.inu_noitce.bbs.ArticleResponse;
-import com.dufrane.inu_noitce.bbs.ArticleService;
+
 import lombok.RequiredArgsConstructor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -15,7 +12,6 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.io.IOException;
 import java.util.List;
 
