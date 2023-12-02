@@ -8,6 +8,8 @@ class InuNoitceApplicationTests {
 
     @Test
     void contextLoads() {
+
+
     }
 
 }

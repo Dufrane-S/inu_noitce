@@ -1,8 +1,12 @@
 package com.dufrane.inu_noitce.bbs;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.awt.*;
 import java.util.List;
 
 @Service
@@ -26,6 +30,11 @@ public class ArticleService {
                 .stream()
                 .map(ArticleResponse::new)
                 .toList();
+    }
+
+    public Page<Article>getAll(int page){
+        Pageable pageable = PageRequest.of(page,10);
+        return this.articleRepository.findAll(pageable);
     }
 
 

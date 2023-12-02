@@ -5,9 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
-//@AllArgsConstructor
 @Getter
-//@Setter
 public class AddArticleRequest {
     private String title;
     private String category1;
