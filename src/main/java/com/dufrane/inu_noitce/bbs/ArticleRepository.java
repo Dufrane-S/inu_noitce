@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface ArticleRepository extends JpaRepository<Article,Long> {
-    List<Article> findArticlesByTitleContainingIgnoreCase(String title);
+    Page<Article> findArticlesByTitleContainingIgnoreCase(String title,Pageable pageable);
 
     @Override
     Page<Article> findAll(Pageable pageable);

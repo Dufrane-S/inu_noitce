@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 
 import java.awt.*;
@@ -25,17 +26,17 @@ public class ArticleService {
         return articleRepository.save(request.toEntitiy());
     }
 
-    public List<ArticleResponse> searchTitle(String keyword){
-        return articleRepository.findArticlesByTitleContainingIgnoreCase(keyword)
-                .stream()
-                .map(ArticleResponse::new)
-                .toList();
+    public Page<Article> searchTitle(String keyword, int page){
+        Pageable pageable = PageRequest.of(page,10);
+        return articleRepository.findArticlesByTitleContainingIgnoreCase(keyword , pageable);
     }
 
     public Page<Article>getAll(int page){
         Pageable pageable = PageRequest.of(page,10);
         return this.articleRepository.findAll(pageable);
     }
+
+
 
 
 

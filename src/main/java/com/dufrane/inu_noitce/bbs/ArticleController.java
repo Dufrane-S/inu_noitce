@@ -85,9 +85,12 @@ public class ArticleController {
         return HttpStatus.OK;
     }
 
-    @RequestMapping("/search/{title}")
-    public ResponseEntity<List<ArticleResponse>> searchByTitle(@PathVariable("title")String title){
-        return ResponseEntity.ok().body(articleService.searchTitle(title));
+
+    @RequestMapping("/search/page")
+    public ResponseEntity<Page<Article>> searchByTitle(@RequestParam(value = "keyword")String keyword ,
+                                                       @RequestParam(value = "page", defaultValue = "0")int page){
+        Page<Article> result = this.articleService.searchTitle(keyword, page);
+        return ResponseEntity.ok().body(result);
     }
 
     @RequestMapping("articles/page")
