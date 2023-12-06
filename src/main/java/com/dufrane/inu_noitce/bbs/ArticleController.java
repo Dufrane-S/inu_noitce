@@ -121,22 +121,30 @@ public class ArticleController {
     public ResponseEntity searchByTitle(@RequestParam(value = "keyword1")String keyword1,
                                         @RequestParam(value = "keyword2", defaultValue = "")String keyword2 ,
                                         @RequestParam(value = "keyword3", defaultValue = "")String keyword3 ,
-                                                       @RequestParam(value = "page", defaultValue = "0")int page){
+                                                       @RequestParam(value = "num", defaultValue = "0")int num){
         Page<Article>result;
         if (keyword2.isBlank()){
-            result = this.articleService.searchTitle(keyword1, page);
+            result = this.articleService.searchTitle(keyword1, num);
         } else if (keyword3.isBlank()) {
-            result = this.articleService.searchTitle(keyword1,keyword2,page);
+            result = this.articleService.searchTitle(keyword1,keyword2, num);
         }else{
-            result = this.articleService.searchTitle(keyword1,keyword2,keyword3,page);
+            result = this.articleService.searchTitle(keyword1,keyword2,keyword3, num);
         }
 
         return ResponseEntity.ok().body(result);
     }
     @CrossOrigin
     @RequestMapping("articles/page")
-        public ResponseEntity<Page<Article>> findArticle(@RequestParam(value = "num",defaultValue = "0")int num){
-            Page<Article> paging = this.articleService.getAll(num);
+        public ResponseEntity<Page<Article>> loadArticles(@RequestParam(value = "num",defaultValue = "0")int num,
+                                                          @RequestParam(value = "category1",defaultValue = "")String category1){
+
+            Page<Article> paging;
+            if (category1.isBlank()){
+                paging = this.articleService.getAll(num);
+            }else {
+                paging = this.articleService.loadArticles(category1,num);
+            }
+
             return ResponseEntity.ok()
                     .body(paging);
 

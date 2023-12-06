@@ -39,6 +39,10 @@ public class ArticleService {
         return articleRepository.searchTitle3(keyword1, keyword2, keyword3, pageable);
     }
 
+    public Page<Article> loadArticles(String category1, int page){
+        Pageable pageable = PageRequest.of(page,10);
+        return articleRepository.findArticlesByCategory1OrderByDate(category1, pageable);
+    }
 
     public Page<Article>getAll(int page){
         Pageable pageable = PageRequest.of(page,10);
