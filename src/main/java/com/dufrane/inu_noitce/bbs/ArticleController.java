@@ -49,10 +49,13 @@ public class ArticleController {
         //https://shinb.tistory.com/398
         Base64.Encoder encoder = Base64.getEncoder();
         for(int i = 1; i<10; i++){
+            //URL을 변환하는 부분
             String seedURL= "fnct1|@@|%2Fbbs%2Finu%2F2006%2FartclList.do%3Fpage%3D"+ Integer.toString(i) +"%26srchColumn%3D%26srchWrd%3D%26bbsClSeq%3D%26bbsOpenWrdSeq%3D%26rgsBgndeStr%3D%26rgsEnddeStr%3D%26isViewMine%3Dfalse%26";
             byte[] seedByte = seedURL.getBytes();
             seedURL = new String(encoder.encode(seedByte));
             String URL = "https://inu.ac.kr/inu/1534/subview.do?enc="+ seedURL;
+
+            //크롤링하는 부분
             Document doc;
             try {
                 doc = Jsoup.connect(URL).get();
@@ -62,6 +65,9 @@ public class ArticleController {
             Element table = doc.selectFirst("table[class=board-table horizon1]");
             Element tbody = table.getElementsByTag("tbody").first();
             Elements objects = tbody.select("tr").not(".notice ");
+
+
+            // elements를 받아 실제로 db에 넣는 부분
             for (Element object : objects) {
                 request = AddArticleRequest.builder()
                         .title(object.getElementsByTag("strong").first().text())
@@ -87,9 +93,19 @@ public class ArticleController {
 
 
     @RequestMapping("/search/page")
-    public ResponseEntity<Page<Article>> searchByTitle(@RequestParam(value = "keyword")String keyword ,
+    public ResponseEntity searchByTitle(@RequestParam(value = "keyword1")String keyword1,
+                                        @RequestParam(value = "keyword2", defaultValue = "")String keyword2 ,
+                                        @RequestParam(value = "keyword3", defaultValue = "")String keyword3 ,
                                                        @RequestParam(value = "page", defaultValue = "0")int page){
-        Page<Article> result = this.articleService.searchTitle(keyword, page);
+        Page<Article>result;
+        if (keyword2.isBlank()){
+            result = this.articleService.searchTitle(keyword1, page);
+        } else if (keyword3.isBlank()) {
+            result = this.articleService.searchTitle(keyword1,keyword2,page);
+        }else{
+            result = this.articleService.searchTitle(keyword1,keyword2,keyword3,page);
+        }
+
         return ResponseEntity.ok().body(result);
     }
 

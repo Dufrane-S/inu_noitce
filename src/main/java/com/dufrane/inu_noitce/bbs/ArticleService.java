@@ -30,6 +30,15 @@ public class ArticleService {
         Pageable pageable = PageRequest.of(page,10);
         return articleRepository.findArticlesByTitleContainingIgnoreCase(keyword , pageable);
     }
+    public Page<Article> searchTitle(String keyword1, String keyword2, int page){
+        Pageable pageable = PageRequest.of(page,10);
+        return articleRepository.searchTitle2(keyword1, keyword2, pageable);
+    }
+    public Page<Article> searchTitle(String keyword1, String keyword2, String keyword3, int page){
+        Pageable pageable = PageRequest.of(page,10);
+        return articleRepository.searchTitle3(keyword1, keyword2, keyword3, pageable);
+    }
+
 
     public Page<Article>getAll(int page){
         Pageable pageable = PageRequest.of(page,10);
