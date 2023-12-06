@@ -91,7 +91,7 @@ public class ArticleController {
         return HttpStatus.OK;
     }
 
-
+    @CrossOrigin
     @RequestMapping("/search/page")
     public ResponseEntity searchByTitle(@RequestParam(value = "keyword1")String keyword1,
                                         @RequestParam(value = "keyword2", defaultValue = "")String keyword2 ,
@@ -108,7 +108,7 @@ public class ArticleController {
 
         return ResponseEntity.ok().body(result);
     }
-
+    @CrossOrigin
     @RequestMapping("articles/page")
         public ResponseEntity<Page<Article>> findArticle(@RequestParam(value = "num",defaultValue = "0")int num){
             Page<Article> paging = this.articleService.getAll(num);
