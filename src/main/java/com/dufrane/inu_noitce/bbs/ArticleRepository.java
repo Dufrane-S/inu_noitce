@@ -9,6 +9,7 @@ import java.util.List;
 
 public interface ArticleRepository extends JpaRepository<Article,Long> {
     Page<Article> findArticlesByTitleContainingIgnoreCase(String title,Pageable pageable);
+    Page<Article> findArticlesByTitleContainingIgnoreCaseAndAndCategory1Containing(String title, String category1 ,Pageable pageable);
     Page<Article> findArticlesByCategory1OrderByDate(String category1, Pageable pageable);
     @Query(value = "select a from Article a where a.title like CONCAT('%', :keyword1, '%') and a.title like CONCAT('%', :keyword2, '%')")
     //@Query(value = "SELECT * FROM article WHERE title like '%모집%' AND title like '%근로%'",nativeQuery = true)

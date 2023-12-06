@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.sql.Date;
+
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
@@ -28,7 +30,7 @@ public class Article {
     private String writer;
 
     @Column(name = "date", nullable = false)
-    private String date;
+    private Date date;
 
     @Column(name = "url", nullable = false)
     private String url;
@@ -36,7 +38,7 @@ public class Article {
     @Column(name = "org_num", nullable = false)
     private Long org_num;
     @Builder
-    public Article(String category2, Long id_num, String title, String category1, String writer, String date, String url, Long org_num){
+    public Article(String category2, Long id_num, String title, String category1, String writer, Date date, String url, Long org_num){
         this.title = title;
         this.id_num= id_num;
         this.category1 = category1;

@@ -48,9 +48,9 @@ public class ArticleService {
         Pageable pageable = PageRequest.of(page,10);
         return this.articleRepository.findAll(pageable);
     }
+    public Page<Article>searchTitleAndCategory(String title, String category1, int page){
+        Pageable pageable = PageRequest.of(page, 10);
+        return this.articleRepository.findArticlesByTitleContainingIgnoreCaseAndAndCategory1Containing(title,category1,pageable);
 
-
-
-
-
+    }
 }

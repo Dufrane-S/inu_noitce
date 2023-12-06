@@ -4,6 +4,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.sql.Date;
+
 @NoArgsConstructor
 @Getter
 public class AddArticleRequest {
@@ -11,12 +13,12 @@ public class AddArticleRequest {
     private String category1;
     private String category2;
     private String writer;
-    private String date;
+    private Date date;
     private String url;
     private Long org_num;
 
     @Builder
-    public AddArticleRequest(String category2, String title, String category1, String writer, String date, String url, Long org_num){
+    public AddArticleRequest(String category2, String title, String category1, String writer, Date date, String url, Long org_num){
         this.title = title;
         this.category1 = category1;
         this.category2 = category2;

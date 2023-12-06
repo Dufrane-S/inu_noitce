@@ -51,13 +51,13 @@ public class ArticleController {
         for(int i = 1; i<10; i++){
             //URL을 변환하는 부분
 
-            //String seedURL= "fnct1|@@|%2Fbbs%2Finu%2F2006%2FartclList.do%3Fpage%3D"+ Integer.toString(i) +"%26srchColumn%3D%26srchWrd%3D%26bbsClSeq%3D%26bbsOpenWrdSeq%3D%26rgsBgndeStr%3D%26rgsEnddeStr%3D%26isViewMine%3Dfalse%26";
-            String seedURL = "fnct1|@@|%2Fbbs%2Fisis%2F376%2FartclList.do%3Fpage%3D" + Integer.toString(i) +"%26srchColumn%3D%26srchWrd%3D%26bbsClSeq%3D%26bbsOpenWrdSeq%3D%26rgsBgndeStr%3D%26rgsEnddeStr%3D%26isViewMine%3Dfalse%26";
+            String seedURL= "fnct1|@@|%2Fbbs%2Finu%2F2006%2FartclList.do%3Fpage%3D"+ Integer.toString(i) +"%26srchColumn%3D%26srchWrd%3D%26bbsClSeq%3D%26bbsOpenWrdSeq%3D%26rgsBgndeStr%3D%26rgsEnddeStr%3D%26isViewMine%3Dfalse%26";
+            //String seedURL = "fnct1|@@|%2Fbbs%2Fisis%2F376%2FartclList.do%3Fpage%3D" + Integer.toString(i) +"%26srchColumn%3D%26srchWrd%3D%26bbsClSeq%3D%26bbsOpenWrdSeq%3D%26rgsBgndeStr%3D%26rgsEnddeStr%3D%26isViewMine%3Dfalse%26";
             byte[] seedByte = seedURL.getBytes();
             seedURL = new String(encoder.encode(seedByte));
 
-            //String URL = "https://inu.ac.kr/inu/1534/subview.do?enc="+ seedURL;
-            String URL = "https://cse.inu.ac.kr/isis/3519/subview.do?enc=" + seedURL;
+            String URL = "https://inu.ac.kr/inu/1534/subview.do?enc="+ seedURL;
+            //String URL = "https://cse.inu.ac.kr/isis/3519/subview.do?enc=" + seedURL;
             //크롤링하는 부분
             Document doc;
             try {
@@ -77,12 +77,13 @@ public class ArticleController {
                 request = AddArticleRequest.builder()
                         .title(object.getElementsByTag("strong").first().text())
                         .org_num(Long.parseLong(object.getElementsByClass("td-num").text().strip()))
-                        //.url("https://www.inu.ac.kr" + object.getElementsByTag("a").attr("href"))
-                        .url("https://cse.inu.ac.kr/" + object.getElementsByTag("a").attr("href"))
+                        .url("https://www.inu.ac.kr" + object.getElementsByTag("a").attr("href"))
+                        //.url("https://cse.inu.ac.kr/" + object.getElementsByTag("a").attr("href"))
                         .category1("학교")
                         .writer(object.getElementsByClass("td-write").text())
                         .category2(object.getElementsByClass("td-category").text())
-                        .date(object.getElementsByClass("td-date").text())
+                        .date(java.sql.Date.valueOf(object.getElementsByClass("td-date").text().replace(".","-")))
+
                         .org_num(Long.parseLong(object.getElementsByClass("td-num").text().strip())).build();
                 articleService.save(request);
 
@@ -91,22 +92,6 @@ public class ArticleController {
                 Thread.sleep(1000); //1초 대기
             } catch (InterruptedException e) {
                 e.printStackTrace();
-            }
-
-            Crawler crawler= new Crawler();
-            for (Element object : objects) {
-                request = AddArticleRequest.builder()
-                        .title(object.getElementsByTag("strong").first().text())
-                        .org_num(Long.parseLong(object.getElementsByClass("td-num").text().strip()))
-                        //.url("https://www.inu.ac.kr" + object.getElementsByTag("a").attr("href"))
-                        .url("https://cse.inu.ac.kr/" + object.getElementsByTag("a").attr("href"))
-                        .category1("학교")
-                        .writer(object.getElementsByClass("td-write").text())
-                        .category2(object.getElementsByClass("td-category").text())
-                        .date(object.getElementsByClass("td-date").text())
-                        .org_num(Long.parseLong(object.getElementsByClass("td-num").text().strip())).build();
-                articleService.save(request);
-
             }
 
 
@@ -121,15 +106,22 @@ public class ArticleController {
     public ResponseEntity searchByTitle(@RequestParam(value = "keyword1")String keyword1,
                                         @RequestParam(value = "keyword2", defaultValue = "")String keyword2 ,
                                         @RequestParam(value = "keyword3", defaultValue = "")String keyword3 ,
-                                                       @RequestParam(value = "num", defaultValue = "0")int num){
+                                        @RequestParam(value = "num", defaultValue = "0")int num,
+                                        @RequestParam(value = "category1",defaultValue ="")String category1){
         Page<Article>result;
-        if (keyword2.isBlank()){
+        if (category1.isBlank()){
+            result = this.articleService.searchTitle(keyword1, num);
+        }else {
+            result = this.articleService.searchTitleAndCategory(keyword1,category1 ,num);
+        }
+
+        /*if (keyword2.isBlank()){
             result = this.articleService.searchTitle(keyword1, num);
         } else if (keyword3.isBlank()) {
             result = this.articleService.searchTitle(keyword1,keyword2, num);
         }else{
             result = this.articleService.searchTitle(keyword1,keyword2,keyword3, num);
-        }
+        }*/
 
         return ResponseEntity.ok().body(result);
     }

@@ -2,13 +2,15 @@ package com.dufrane.inu_noitce.bbs;
 
 import lombok.Getter;
 
+import java.sql.Date;
+
 @Getter
 public class ArticleResponse {
     private final String title;
     private final String category1;
     private final String category2;
     private final String writer;
-    private final String date;
+    private final Date date;
     private final String url;
 
     public ArticleResponse(Article article){
