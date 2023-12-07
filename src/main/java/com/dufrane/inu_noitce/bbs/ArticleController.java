@@ -40,6 +40,23 @@ public class ArticleController {
 
     }
 
+    @RequestMapping("DB_update_new")
+    public String updateDB(AddArticleRequest request,
+                           @RequestParam(value = "target",defaultValue = "all")String target,
+                           @RequestParam(value = "pages",defaultValue = "10")int pages){
+
+        Crawler crawler = new Crawler();
+        List<AddArticleRequest> result = crawler.crawl(target,pages);
+        for (AddArticleRequest object : result){
+                request=object;
+                articleService.save(request);
+            }
+        return "OK";
+    }
+
+
+
+
     @RequestMapping("articles_update_school")
     //@RequestBody로 요청 본문 값 매핑
     public HttpStatus addArticle(AddArticleRequest request){
@@ -51,13 +68,15 @@ public class ArticleController {
         for(int i = 1; i<10; i++){
             //URL을 변환하는 부분
 
-            String seedURL= "fnct1|@@|%2Fbbs%2Finu%2F2006%2FartclList.do%3Fpage%3D"+ Integer.toString(i) +"%26srchColumn%3D%26srchWrd%3D%26bbsClSeq%3D%26bbsOpenWrdSeq%3D%26rgsBgndeStr%3D%26rgsEnddeStr%3D%26isViewMine%3Dfalse%26";
-            //String seedURL = "fnct1|@@|%2Fbbs%2Fisis%2F376%2FartclList.do%3Fpage%3D" + Integer.toString(i) +"%26srchColumn%3D%26srchWrd%3D%26bbsClSeq%3D%26bbsOpenWrdSeq%3D%26rgsBgndeStr%3D%26rgsEnddeStr%3D%26isViewMine%3Dfalse%26";
+            String seedURL= "fnct1|@@|%2Fbbs%2Finu%2F2006%2FartclList.do%3Fpage%3D"+ Integer.toString(i) +
+                    "%26srchColumn%3D%26srchWrd%3D%26bbsClSeq%3D%26bbsOpenWrdSeq%3D%26rgsBgndeStr%3D%26rgsEnddeStr%3D%26isViewMine%3Dfalse%26"; //inu
+            //String seedURL = "fnct1|@@|%2Fbbs%2Fisis%2F376%2FartclList.do%3Fpage%3D" + Integer.toString(i) +
+            // "%26srchColumn%3D%26srchWrd%3D%26bbsClSeq%3D%26bbsOpenWrdSeq%3D%26rgsBgndeStr%3D%26rgsEnddeStr%3D%26isViewMine%3Dfalse%26"; //cse
             byte[] seedByte = seedURL.getBytes();
             seedURL = new String(encoder.encode(seedByte));
 
-            String URL = "https://inu.ac.kr/inu/1534/subview.do?enc="+ seedURL;
-            //String URL = "https://cse.inu.ac.kr/isis/3519/subview.do?enc=" + seedURL;
+            String URL = "https://inu.ac.kr/inu/1534/subview.do?enc="+ seedURL;  //inu
+            //String URL = "https://cse.inu.ac.kr/isis/3519/subview.do?enc=" + seedURL; //cse
             //크롤링하는 부분
             Document doc;
             try {
@@ -77,9 +96,10 @@ public class ArticleController {
                 request = AddArticleRequest.builder()
                         .title(object.getElementsByTag("strong").first().text())
                         .org_num(Long.parseLong(object.getElementsByClass("td-num").text().strip()))
-                        .url("https://www.inu.ac.kr" + object.getElementsByTag("a").attr("href"))
-                        //.url("https://cse.inu.ac.kr/" + object.getElementsByTag("a").attr("href"))
-                        .category1("학교")
+                        .url("https://www.inu.ac.kr" + object.getElementsByTag("a").attr("href")) // inu
+                        //.url("https://cse.inu.ac.kr/" + object.getElementsByTag("a").attr("href")) cse
+                        .category1("inu") //inu
+                        //.category1("cse") //cse
                         .writer(object.getElementsByClass("td-write").text())
                         .category2(object.getElementsByClass("td-category").text())
                         .date(java.sql.Date.valueOf(object.getElementsByClass("td-date").text().replace(".","-")))

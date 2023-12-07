@@ -1,6 +1,7 @@
 package com.dufrane.inu_noitce.bbs;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
@@ -16,29 +17,56 @@ public class Crawler {
  * @param target 크롤링할 사이트 full0 = 전체, inu = 학교, dorm = 기숙사, int = 국제교류원, cse = 컴공, lib = 도서관
  * @param pages 크롤링할 페이지
  * */
-    private final String scSeedUrlFront = "fnct1|@@|%2Fbbs%2Finu%2F2006%2FartclList.do%3Fpage%3D";
-    private final String scSeedUrlRear = "%26srchColumn%3D%26srchWrd%3D%26bbsClSeq%3D%26bbsOpenWrdSeq%3D%26rgsBgndeStr%3D%26rgsEnddeStr%3D%26isViewMine%3Dfalse%26";
-    private final String scSeedUrlHead = "https://inu.ac.kr/inu/1534/subview.do?enc=";
+    private String inuSeedUrlFront = "fnct1|@@|%2Fbbs%2Finu%2F2006%2FartclList.do%3Fpage%3D";
+    private String inuSeedUrlRear = "%26srchColumn%3D%26srchWrd%3D%26bbsClSeq%3D%26bbsOpenWrdSeq%3D%26rgsBgndeStr%3D%26rgsEnddeStr%3D%26isViewMine%3Dfalse%26";
+    private String inuSeedUrlHead = "https://inu.ac.kr/inu/1534/subview.do?enc=";
 
+    private String cseSeedUrlFront ="fnct1|@@|%2Fbbs%2Fisis%2F376%2FartclList.do%3Fpage%3D";
+    private String cseSeedUrlRear = "%26srchColumn%3D%26srchWrd%3D%26bbsClSeq%3D%26bbsOpenWrdSeq%3D%26rgsBgndeStr%3D%26rgsEnddeStr%3D%26isViewMine%3Dfalse%26";
+    private String cseSeedUrlHead ="https://cse.inu.ac.kr/isis/3519/subview.do?enc=";;
 
-    String cseSeedUrl="https://cse.inu.ac.kr/isis/3519/subview.do?enc=Zm5jdDF8QEB8JTJGYmJzJTJGaXNpcyUyRjM3NiUyRmFydGNsTGlzdC5kbyUzRnBhZ2UlM0QxJTI2c3JjaENvbHVtbiUzRCUyNnNyY2hXcmQlM0QlMjZiYnNDbFNlcSUzRCUyNmJic09wZW5XcmRTZXElM0QlMjZyZ3NCZ25kZVN0ciUzRCUyNnJnc0VuZGRlU3RyJTNEJTI2aXNWaWV3TWluZSUzRGZhbHNlJTI2";
+    private String dormSeedUrlFront ="fnct1|@@|%2Fbbs%2Fdorm%2F1521%2FartclList.do%3Fpage%3D";
+    private String dormSeedUrlRear = "%26srchColumn%3D%26srchWrd%3D%26bbsClSeq%3D%26bbsOpenWrdSeq%3D%26rgsBgndeStr%3D%26rgsEnddeStr%3D%26isViewMine%3Dfalse%26";
+    private String dormSeedUrlHead ="https://dorm.inu.ac.kr/dorm/6528/subview.do?enc=";
 
+    private String intSeedUrlFront ="fnct1|@@|%2Fbbs%2Fglobal%2F1412%2FartclList.do%3Fpage%3D";
+    private String intSeedUrlRear = "%26srchColumn%3D%26srchWrd%3D%26bbsClSeq%3D%26bbsOpenWrdSeq%3D%26rgsBgndeStr%3D%26rgsEnddeStr%3D%26isViewMine%3Dfalse%26";
+    private String intSeedUrlHead ="https://www.inu.ac.kr/global/6018/subview.do?enc=Zm5jdDF8QEB8JTJGYmJzJTJGZ2xvYmFsJTJGMTQxMiUyRmFydGNsTGlzdC5kbyUzRnBhZ2UlM0QxJTI2c3JjaENvbHVtbiUzRCUyNnNyY2hXcmQlM0QlMjZiYnNDbFNlcSUzRCUyNmJic09wZW5XcmRTZXElM0QlMjZyZ3NCZ25kZVN0ciUzRCUyNnJnc0VuZGRlU3RyJTNEJTI2aXNWaWV3TWluZSUzRGZhbHNlJTI2";
 
-
-    public List<Elements> crawl(String target, int pages) {
+    public List<AddArticleRequest> crawl(String target, int pages) {
         String seedUrlFront="";
         String seedUrlRear="";
         String seedUrlHead="";
+        String category1=target;
         String urlHead="";
-        List<Elements> result = null;
+        List<AddArticleRequest> result = new ArrayList<>() {
+        };
+        AddArticleRequest request=null;
         if (target.equals("inu")) {
-            seedUrlFront = this.scSeedUrlFront;
-            seedUrlRear = this.scSeedUrlRear;
-            seedUrlHead = this.scSeedUrlHead;
+            seedUrlFront = this.inuSeedUrlFront;
+            seedUrlRear = this.inuSeedUrlRear;
+            seedUrlHead = this.inuSeedUrlHead;
+            urlHead="https://www.inu.ac.kr";
+        }else if (target.equals("cse")){
+            seedUrlFront = this.cseSeedUrlFront;
+            seedUrlRear = this.cseSeedUrlRear;
+            seedUrlHead = this.cseSeedUrlHead;
+            urlHead="https://cse.inu.ac.kr/";
+        }else if (target.equals("dorm")){
+            seedUrlFront = this.dormSeedUrlFront;
+            seedUrlRear = this.dormSeedUrlRear;
+            seedUrlHead = this.dormSeedUrlHead;
+            urlHead="https://dorm.inu.ac.kr";
+        } else if (target.equals("int")) {
+            seedUrlFront = this.intSeedUrlFront;
+            seedUrlRear = this.intSeedUrlRear;
+            seedUrlHead = this.intSeedUrlHead;
+            urlHead="https://www.inu.ac.kr";
         }
-        for (int i =0; i<pages; i++){
-            String seedUrl = seedUrlFront+Integer.toString(i)+seedUrlRear;
+        for (int i =1; i<pages; i++){
+            String seedUrl = seedUrlFront+ i +seedUrlRear;
             String URL= seedUrlHead+to64(seedUrl);
+
             Document doc;
             try {
                 doc = Jsoup.connect(URL).get();
@@ -47,13 +75,30 @@ public class Crawler {
             }
             Element table = doc.selectFirst("table[class=board-table horizon1]");
             Element tbody = table.getElementsByTag("tbody").first();
-            result.add(tbody.select("tr").not(".notice "));
+            Elements elements=(tbody.select("tr").not(".notice "));
+            for (Element object : elements){
+                request=  AddArticleRequest.builder()
+                        .title(object.getElementsByTag("strong").first().text())
+                        .org_num(Long.parseLong(object.getElementsByClass("td-num").text().strip()))
+                        .url(urlHead + object.getElementsByTag("a").attr("href"))
+                        .category1(target)
+                        .writer(object.getElementsByClass("td-write").text())
+                        .category2(object.getElementsByClass("td-category").text())
+                        .date(java.sql.Date.valueOf(object.getElementsByClass("td-date").text().replace(".","-")))
+                        .org_num(Long.parseLong(object.getElementsByClass("td-num").text().strip())).build();
+                result.add(request);
+            }
             try {
                 Thread.sleep(1000); //1초 대기
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
+
+
+
+
+
         return result;
     }
 
