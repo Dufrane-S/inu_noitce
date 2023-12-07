@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.awt.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -19,16 +20,42 @@ public class ArticleService {
                 .orElseThrow(() -> new IllegalArgumentException("not found : " + id));
     }
 
-    public List<Article> findall(){
-        return articleRepository.findAll();
+    public ArticleListResponse findall(int page){
+        Pageable pageable =PageRequest.of(page,10);
+        Page<Article> articlePage = articleRepository.findAll(pageable);
+        return new ArticleListResponse(articlePage);
     }
+
+    public ArticleListResponse loadArticlesBbsByCategory1Keyword(String category1, String keyword, int page){
+        Pageable pageable = PageRequest.of(page, 10);
+        Page<Article> articlePage = articleRepository.loadArticlesBbsByCategory1Keyword(category1,keyword,pageable);
+        return new ArticleListResponse(articlePage);
+    }
+
+    public ArticleListResponse loadArtilesByCategory1(String category1, int page){
+        Pageable pageable = PageRequest.of(page, 10);
+        Page<Article> articlePage = articleRepository.loadArticlesBbsByCategory1(category1,pageable);
+        return new ArticleListResponse(articlePage);
+    }
+
+    public ArticleListResponse loadArtilesByKeyword(String keyword, int page){
+        Pageable pageable = PageRequest.of(page, 10);
+        Page<Article> articlePage = articleRepository.loadArticlesBbsByKeyword(keyword,pageable);
+        return new ArticleListResponse(articlePage);
+    }
+
+
+
+
+
     public Article save(AddArticleRequest request){
         return articleRepository.save(request.toEntitiy());
     }
 
     public Page<Article> searchTitle(String keyword, int page){
         Pageable pageable = PageRequest.of(page,10);
-        return articleRepository.findArticlesByTitleContainingIgnoreCase(keyword , pageable);
+        //return articleRepository.findArticlesByTitleContainingIgnoreCase(keyword , pageable);
+        return articleRepository.searchTitle1(keyword , pageable);
     }
     public Page<Article> searchTitle(String keyword1, String keyword2, int page){
         Pageable pageable = PageRequest.of(page,10);
@@ -41,7 +68,7 @@ public class ArticleService {
 
     public Page<Article> loadArticles(String category1, int page){
         Pageable pageable = PageRequest.of(page,10);
-        return articleRepository.findArticlesByCategory1OrderByDate(category1, pageable);
+        return articleRepository.findArticlesByCategory1OrderByDateDesc(category1, pageable);
     }
 
     public Page<Article>getAll(int page){

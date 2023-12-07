@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.util.Base64;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @RestController
@@ -27,16 +28,26 @@ public class ArticleController {
                 .body(new ArticleResponse(article));
     }
 
-    @RequestMapping("/articles")
+    @RequestMapping("/articlesBbs")
     @CrossOrigin
-    public ResponseEntity<List<ArticleResponse>> findAllArticles(){
-        List<ArticleResponse> articles = articleService.findall()
-                .stream()
-                .map(ArticleResponse::new)
-                .toList();
+    public ResponseEntity<ArticleListResponse> loadArticlesBbs(@RequestParam(value = "num",defaultValue = "0")int num,
+                                                                 @RequestParam(value = "keyword",defaultValue = "")String keyword,
+                                                                 @RequestParam(value = "category1",defaultValue = "")String category1){
 
-        return ResponseEntity.ok()
-                .body(articles);
+        if (keyword.isBlank() && category1.isBlank()){
+            return ResponseEntity.ok()
+                    .body(articleService.findall(num));
+        } else if (keyword.isBlank()) {
+            return ResponseEntity.ok()
+                    .body(articleService.loadArtilesByCategory1(category1,num));
+        } else if (category1.isBlank()) {
+            return ResponseEntity.ok()
+                    .body(articleService.loadArtilesByKeyword(keyword,num));
+        }else{
+            return ResponseEntity.ok()
+                    .body(articleService.loadArticlesBbsByCategory1Keyword(category1,keyword,num));
+        }
+
 
     }
 
@@ -147,19 +158,24 @@ public class ArticleController {
     }
     @CrossOrigin
     @RequestMapping("articles/page")
-        public ResponseEntity<Page<Article>> loadArticles(@RequestParam(value = "num",defaultValue = "0")int num,
+        public ResponseEntity<ArticleListResponse> loadArticles(@RequestParam(value = "num",defaultValue = "0")int num,
                                                           @RequestParam(value = "category1",defaultValue = "")String category1){
 
             Page<Article> paging;
+            ArticleListResponse result;
+
             if (category1.isBlank()){
                 paging = this.articleService.getAll(num);
+                result= new ArticleListResponse(paging);
             }else {
                 paging = this.articleService.loadArticles(category1,num);
+                result = new ArticleListResponse(paging);
             }
 
             return ResponseEntity.ok()
-                    .body(paging);
+                    .body(result);
 
     }
+
 
 }
