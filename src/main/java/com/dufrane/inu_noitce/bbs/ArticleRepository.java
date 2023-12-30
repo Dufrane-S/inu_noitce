@@ -21,11 +21,11 @@ public interface ArticleRepository extends JpaRepository<Article,Long> {
     @Override
     Page<Article> findAll(Pageable pageable);
 
-    @Query(value = "select a from Article a where a.title like %:keyword% and a.category1 = :category1 order by a.date desc")
+    @Query(value = "select a from Article a where a.title like %:keyword% and a.category1 = :category1")
     public Page<Article>loadArticlesBbsByCategory1Keyword(String category1, String keyword, Pageable pageable);
-    @Query(value = "select a from Article a where a.title like %:keyword% order by a.date desc")
+    @Query(value = "select a from Article a where a.title like %:keyword%")
     public Page<Article>loadArticlesBbsByKeyword(String keyword, Pageable pageable);
-    @Query(value = "select a from Article a where a.category1 = :category1 order by a.date desc")
+    @Query(value = "select a from Article a where a.category1 = :category1")
     public Page<Article>loadArticlesBbsByCategory1(String category1, Pageable pageable);
 
 }

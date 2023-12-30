@@ -31,6 +31,7 @@ dependencies {
     implementation 'org.jsoup:jsoup:1.17.1'
 
 
+
 }
 
 tasks.named('bootBuildImage') {

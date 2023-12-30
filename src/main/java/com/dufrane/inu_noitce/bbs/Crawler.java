@@ -31,7 +31,7 @@ public class Crawler {
 
     private String intSeedUrlFront ="fnct1|@@|%2Fbbs%2Fglobal%2F1412%2FartclList.do%3Fpage%3D";
     private String intSeedUrlRear = "%26srchColumn%3D%26srchWrd%3D%26bbsClSeq%3D%26bbsOpenWrdSeq%3D%26rgsBgndeStr%3D%26rgsEnddeStr%3D%26isViewMine%3Dfalse%26";
-    private String intSeedUrlHead ="https://www.inu.ac.kr/global/6018/subview.do?enc=Zm5jdDF8QEB8JTJGYmJzJTJGZ2xvYmFsJTJGMTQxMiUyRmFydGNsTGlzdC5kbyUzRnBhZ2UlM0QxJTI2c3JjaENvbHVtbiUzRCUyNnNyY2hXcmQlM0QlMjZiYnNDbFNlcSUzRCUyNmJic09wZW5XcmRTZXElM0QlMjZyZ3NCZ25kZVN0ciUzRCUyNnJnc0VuZGRlU3RyJTNEJTI2aXNWaWV3TWluZSUzRGZhbHNlJTI2";
+    private String intSeedUrlHead ="https://www.inu.ac.kr/global/6018/subview.do?enc=";
 
     public List<AddArticleRequest> crawl(String target, int pages) {
         String seedUrlFront="";
@@ -76,18 +76,47 @@ public class Crawler {
             Element table = doc.selectFirst("table[class=board-table horizon1]");
             Element tbody = table.getElementsByTag("tbody").first();
             Elements elements=(tbody.select("tr").not(".notice "));
-            for (Element object : elements){
-                request=  AddArticleRequest.builder()
-                        .title(object.getElementsByTag("strong").first().text())
-                        .org_num(Long.parseLong(object.getElementsByClass("td-num").text().strip()))
-                        .url(urlHead + object.getElementsByTag("a").attr("href"))
-                        .category1(target)
-                        .writer(object.getElementsByClass("td-write").text())
-                        .category2(object.getElementsByClass("td-category").text())
-                        .date(java.sql.Date.valueOf(object.getElementsByClass("td-date").text().replace(".","-")))
-                        .org_num(Long.parseLong(object.getElementsByClass("td-num").text().strip())).build();
-                result.add(request);
+            if (target.equals("cse")){
+                for (Element object : elements){
+                    request=  AddArticleRequest.builder()
+                            .title(object.getElementsByTag("strong").first().text())
+                            .org_num(Long.parseLong(object.getElementsByClass("td-num").text().strip()))
+                            .url(urlHead + object.getElementsByTag("a").attr("href"))
+                            .category1(target)
+                            .writer(object.getElementsByClass("td-write").text())
+                            .category2("[일반]")
+                            .date(java.sql.Date.valueOf(object.getElementsByClass("td-date").text().replace(".","-")))
+                            .org_num(Long.parseLong(object.getElementsByClass("td-num").text().strip())).build();
+                    result.add(request);
+                }
+            } else if (target.equals("int")) {
+                for (Element object : elements){
+                    request=  AddArticleRequest.builder()
+                            .title(object.getElementsByTag("strong").first().text())
+                            .org_num(Long.parseLong(object.getElementsByClass("td-num").text().strip()))
+                            .url(urlHead + object.getElementsByTag("a").attr("href"))
+                            .category1(target)
+                            .writer(object.getElementsByClass("td-write").text())
+                            .category2("[일반]")
+                            .date(java.sql.Date.valueOf(object.getElementsByClass("td-date").text().replace(".","-")))
+                            .org_num(Long.parseLong(object.getElementsByClass("td-num").text().strip())).build();
+                    result.add(request);
+                }
+            }else{
+                for (Element object : elements){
+                    request=  AddArticleRequest.builder()
+                            .title(object.getElementsByTag("strong").first().text())
+                            .org_num(Long.parseLong(object.getElementsByClass("td-num").text().strip()))
+                            .url(urlHead + object.getElementsByTag("a").attr("href"))
+                            .category1(target)
+                            .writer(object.getElementsByClass("td-write").text())
+                            .category2(object.getElementsByClass("td-category").text())
+                            .date(java.sql.Date.valueOf(object.getElementsByClass("td-date").text().replace(".","-")))
+                            .org_num(Long.parseLong(object.getElementsByClass("td-num").text().strip())).build();
+                    result.add(request);
+                }
             }
+
             try {
                 Thread.sleep(1000); //1초 대기
             } catch (InterruptedException e) {
@@ -101,6 +130,7 @@ public class Crawler {
 
         return result;
     }
+
 
     public static String to64(String seed){
         byte[] seedByte = seed.getBytes();

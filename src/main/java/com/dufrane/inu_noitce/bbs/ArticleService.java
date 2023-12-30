@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 
@@ -21,25 +22,29 @@ public class ArticleService {
     }
 
     public ArticleListResponse findall(int page){
-        Pageable pageable =PageRequest.of(page,10);
+        Sort sort = Sort.by("date").descending();
+        Pageable pageable =PageRequest.of(page,10, sort);
         Page<Article> articlePage = articleRepository.findAll(pageable);
         return new ArticleListResponse(articlePage);
     }
 
     public ArticleListResponse loadArticlesBbsByCategory1Keyword(String category1, String keyword, int page){
-        Pageable pageable = PageRequest.of(page, 10);
+        Sort sort = Sort.by("date").ascending();
+        Pageable pageable = PageRequest.of(page, 10, sort);
         Page<Article> articlePage = articleRepository.loadArticlesBbsByCategory1Keyword(category1,keyword,pageable);
         return new ArticleListResponse(articlePage);
     }
 
     public ArticleListResponse loadArtilesByCategory1(String category1, int page){
-        Pageable pageable = PageRequest.of(page, 10);
+        Sort sort = Sort.by("date").descending();
+        Pageable pageable = PageRequest.of(page, 10, sort);
         Page<Article> articlePage = articleRepository.loadArticlesBbsByCategory1(category1,pageable);
         return new ArticleListResponse(articlePage);
     }
 
     public ArticleListResponse loadArtilesByKeyword(String keyword, int page){
-        Pageable pageable = PageRequest.of(page, 10);
+        Sort sort = Sort.by("date").descending();
+        Pageable pageable = PageRequest.of(page, 10, sort);
         Page<Article> articlePage = articleRepository.loadArticlesBbsByKeyword(keyword,pageable);
         return new ArticleListResponse(articlePage);
     }
@@ -67,16 +72,19 @@ public class ArticleService {
     }
 
     public Page<Article> loadArticles(String category1, int page){
-        Pageable pageable = PageRequest.of(page,10);
+        Sort sort = Sort.by("date").ascending();
+        Pageable pageable = PageRequest.of(page,10,sort);
         return articleRepository.findArticlesByCategory1OrderByDateDesc(category1, pageable);
     }
 
     public Page<Article>getAll(int page){
-        Pageable pageable = PageRequest.of(page,10);
+        Sort sort = Sort.by("date").ascending();
+        Pageable pageable = PageRequest.of(page,10,sort);
         return this.articleRepository.findAll(pageable);
     }
     public Page<Article>searchTitleAndCategory(String title, String category1, int page){
-        Pageable pageable = PageRequest.of(page, 10);
+        Sort sort = Sort.by("date").ascending();
+        Pageable pageable = PageRequest.of(page, 10, sort);
         return this.articleRepository.findArticlesByTitleContainingIgnoreCaseAndAndCategory1Containing(title,category1,pageable);
 
     }
