@@ -52,7 +52,7 @@ public class ArticleController {
 
     @RequestMapping("DB_update_new")
     public String updateDB(AddArticleRequest request,
-                           @RequestParam(value = "target",defaultValue = "all")String target,
+                           @RequestParam(value = "target")String target,
                            @RequestParam(value = "pages",defaultValue = "10")int pages){
 
         Crawler crawler = new Crawler();
@@ -66,7 +66,17 @@ public class ArticleController {
 
 
 
-
+    @RequestMapping("DB_update_lib")
+    public String addLibArticle(AddArticleRequest request,
+                                    @RequestParam(value = "count",defaultValue = "30")int count){
+        Crawler crawler = new Crawler();
+        List<AddArticleRequest> result = crawler.crawl_lib(count);
+        for (AddArticleRequest object : result){
+            request=object;
+            articleService.save(request);
+        }
+        return "OK";
+    }
     @RequestMapping("articles_update_school")
     //@RequestBody로 요청 본문 값 매핑
     public HttpStatus addArticle(AddArticleRequest request){

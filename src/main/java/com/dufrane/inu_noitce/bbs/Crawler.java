@@ -5,6 +5,10 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -128,6 +132,65 @@ public class Crawler {
 
 
 
+        return result;
+    }
+
+
+    public List<AddArticleRequest> crawl_lib(int count){
+        List<AddArticleRequest> result = new ArrayList<>() {
+        };
+        String Lib_URL="https://lib.inu.ac.kr/pyxis-api/1/bulletin-boards/1/bulletins?offset=0&max="+count+"&nameOption=part&isSeq=false&onlyWriter=false";
+        String str = null;
+        try{
+            str = Jsoup.connect(Lib_URL).header("Accept", "text/javascript")
+                    .ignoreContentType(true).execute().body();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        JSONParser jsonParser = new JSONParser();
+        JSONObject jsonObject = null;
+        try{
+            jsonObject = (JSONObject) jsonParser.parse(str);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+
+        jsonObject = (JSONObject) jsonObject.get("data");
+        JSONArray jsonArray = (JSONArray) jsonObject.get("list");
+        jsonObject = (JSONObject) jsonArray.get(0);
+        for (Object object : jsonArray){
+            AddArticleRequest request =null;
+            JSONObject jsonObject1 = (JSONObject) object;
+            String category2 = null;
+            if (jsonObject1.get("bulletinCategory")==null){
+                category2 = ("일반");
+            }
+            else {
+                JSONObject jsonObject2 = (JSONObject) jsonObject1.get("bulletinCategory");
+                category2 = ((String) jsonObject2.get("name"));
+            }
+            String date = (String)jsonObject1.get("lastUpdated");
+            date= date.split(" ")[0];
+            request=  AddArticleRequest.builder()
+                    .title((String) jsonObject1.get("title"))
+                    .org_num((Long) jsonObject1.get("seqNo"))
+                    .url("https://lib.inu.ac.kr/library-guide/news/notice/"+jsonObject1.get("id"))
+                    .category1("도서관")
+                    .writer((String)jsonObject1.get("writer"))
+                    .category2(category2)
+                    .date(java.sql.Date.valueOf(date))
+                    .org_num((Long)jsonObject1.get("seqNo")).build();
+            result.add(request);
+
+            System.out.println(jsonObject1.get("title"));
+            System.out.println(jsonObject1.get("seqNo"));
+            System.out.println(jsonObject1.get("lastUpdated"));
+            System.out.println("https://lib.inu.ac.kr/library-guide/news/notice/"+jsonObject1.get("id"));
+            System.out.println(jsonObject1.get("writer"));
+
+
+        }
         return result;
     }
 
